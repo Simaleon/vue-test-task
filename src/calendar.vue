@@ -2,21 +2,21 @@
     <div class="calendar">
         <header>
             <div class="monthChange prev" @click="prevMonth"></div>
-            <div class="month">{{ translations[lang].months[currentDate.getMonth()] + ' ' + currentDate.getFullYear() }}</div>
+            <div class="month">{{ labels.months[currentDate.getMonth()] + ' ' + currentDate.getFullYear() }}</div>
             <div class="monthChange next" @click="nextMonth"></div>
         </header>
 
         <table class="dates">
             <thead>
                 <tr>
-                    <td v-for="day in translations[lang].weekdays">
+                    <td v-for="day in labels.weekdays">
                         {{ day }}
                     </td>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="week in dates">
-                    <td v-for="day in week" :class="{ current: day && day.getTime() === currentDate.getTime(), active: day !== null }" @click="click($event, day)">
+                    <td v-for="day in week" :class="{ current: day && day.getTime() === currentDate.getTime() }" @click="click($event, day)">
                         <div>
                             {{ day === null ? '' : day.getDate() }}
                         </div>
@@ -30,20 +30,20 @@
 <script lang="js">
     import Vue from "vue";
 
+    const ru = {
+            months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+            weekdays: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
+        },
+        en = {
+            months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+        };
+
     export default Vue.extend( {
         name: "calendar",
         data() {
             return {
-                translations: {
-                    ru: {
-                        months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-                        weekdays: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
-                    },
-                    en: {
-                        months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                        weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-                    }
-                },
+                labels: en,
                 currentDate: new Date(),
                 dates: []
             };
@@ -65,7 +65,8 @@
         },
         methods: {
             click(event, day) {
-                if(event.target.classList.contains('active')) {
+                if(day !== null) {
+                    this.currentDate = day;
 
                     this.$emit('input', day);
                 }
@@ -109,6 +110,10 @@
         created() {
             this.currentDate = this.date;
             this.dates = this.createMonth(this.date);
+
+            if(this.lang === 'ru') {
+                this.labels = ru;
+            }
         }
     });
 </script>
